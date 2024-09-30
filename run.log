@@ -1,0 +1,49 @@
+Listening for speech (press Enter to stop and save)...
+Processing speech...
+Google thinks you said: I am a reviewer for
+Processing speech...
+Google thinks you said: I will Begin by giving a summary
+Processing speech...
+Google thinks you said: this paper presents an A and an algorithm on TPU and analyzes the memory and instruction bandwidth of a n n algorithms
+Processing speech...
+Sorry, I did not get that.
+Processing speech...
+Google thinks you said: I will now go over some struts
+Processing speech...
+Sorry, I did not get that.
+Processing speech...
+Google thinks you said: I will now go over some strengths
+Processing speech...
+Google thinks you said: first of all the problem is well motivated second the related work is comprehensively studied and discussed and the entire story is easy to follow for readers and lastly the methodology to study the algorithm from the hardware bottlenecks is interesting
+Processing speech...
+Google thinks you said: here are some weaknesses I suggest the authors to include a brief discussion of TPU for example what it can be done and what I cannot be done efficiently to experimental evaluation is a bit problematic as well how about other methods on gpus gpus like hashing and graph-based methods beside the f a i s s Baseline and a figure 3 the highest recall shown for glove is 0.9 is there a recall limitation for the proposed algorithm and finally the technical contribution of the by stage partial reduction and scoring is limited
+Processing speech...
+Sorry, I did not get that.
+
+Processing speech...
+Sorry, I did not get that.
+Transcription saved to transcription_chunk_0.pdf
+
+STT transcription is complete.
+Created directory: /app/docs
+Created subfolder: /app/docs/chroma
+Processing transcription_chunk_0.pdf in RAG...
+tokenizer_config.json: 100%|████████████████████████████████████████████████████████| 26.0/26.0 [00:00<00:00, 136kB/s]
+config.json: 100%|███████████████████████████████████████████████████████████████████| 665/665 [00:00<00:00, 1.55MB/s]
+vocab.json: 100%|█████████████████████████████████████████████████████████████████| 1.04M/1.04M [00:04<00:00, 222kB/s]
+merges.txt: 100%|██████████████████████████████████████████████████████████████████| 456k/456k [00:08<00:00, 52.0kB/s]
+tokenizer.json: 100%|████████████████████████████████████████████████████████████| 1.36M/1.36M [01:00<00:00, 22.5kB/s]
+Please enter your question: can provide me a summary of the reviewer?
+Number of requested results 4 is greater than number of elements in index 1, updating n_results = 1
+Answer: The reviewer gave a summary of the paper, highlighting its presentation of an algorithm on TPU and analysis of memory and instruction bandwidth for a specific set of algorithms. They noted strengths such as the well-motivated problem, comprehensive discussion of related work, and easy-to-follow story. However, they also pointed out weaknesses, including the need for a brief discussion of TPU capabilities, problematic experimental evaluation, and limitations in technical contributions. The reviewer overall provided a balanced assessment of the paper, acknowledging both its strengths and areas for improvement.
+RAG process is complete.
+Do you want to go back to STT, ask another LLM question, or exit? (stt/llm/exit): llm
+Processing transcription_chunk_0.pdf in RAG...
+Please enter your question: what did the reviewer notice as the strenghts of the paper?
+Number of requested results 4 is greater than number of elements in index 2, updating n_results = 2
+Answer: The reviewer noticed the following strengths of the paper:
+1. The problem is well motivated.
+2. The related work is comprehensively studied and discussed.
+3. The entire story is easy to follow for readers.
+4. The methodology to study the algorithm from the hardware bottlenecks is interesting.
+RAG process is complete.
