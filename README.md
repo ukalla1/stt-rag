@@ -11,7 +11,7 @@ Run with Virtual Env:
 
 Run with Docker:
 1. Navigate to the project folder
-	1.1 Download the achilles_image.tar docker image from https://outlook.office.com/host/377c982d-9686-450e-9a7c-22aeaf1bc162/7211f19f-262a-42eb-a02e-289956491741
+	1.1 Download the achilles_image.tar docker image from https://livejohnshopkins-my.sharepoint.com/:u:/g/personal/tmohsen1_jh_edu/EQxqyEHriYlGpbm02pJAAZkBjuo8yah_7ESbKVCpfDowWQ?e=9xQd0O
 	1.2 Move the downloaded *.tar file to the project folder
 2. Load the docker on your machine by running ‘docker load -i achilles_image.tar’
 3. Launch the docker by running ‘sh docker_run.sh’
