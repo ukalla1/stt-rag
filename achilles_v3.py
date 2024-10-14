@@ -3,7 +3,7 @@ import time
 from stt_v2 import listen_and_recognize, stop_listening_event
 from rag import RAG_pipeline
 
-# Global flag to track the current chunk number
+# Global flag to track the pcurrent chunk number
 current_chunk_number = 0
 stop_key_event = threading.Event()
 
@@ -22,7 +22,7 @@ def run_stt():
     print("STT transcription is complete.")
 
 # Function to handle RAG process (retrieve and answer)
-def run_rag():
+def run_rag(result):
     global current_chunk_number
 
     analyzer = RAG_pipeline()
@@ -44,9 +44,12 @@ def run_rag():
 
         # Build the QA chain
         analyzer.build_qa_chain()
-
+        
         # Ask user for the question
-        user_question = input("Please enter your question: ")
+        if (result[0] == "0"):
+            user_question = "Give a summary of this paper"
+        elif (result[0] == ""):
+            user_question = input("Please enter your question: ")
 
         # Generate the answer for the user-provided question
         answer = analyzer.generate_answer(user_question, k=k)
@@ -60,10 +63,19 @@ def run_rag():
     print("RAG process is complete.")
 
 # Thread to monitor Enter key press to stop STT
-def monitor_enter_key():
-    input("Press Enter to stop listening...\n")
+def monitor_enter_key(result):
+    result[0] = input("Press Enter to stop listening\n Press 0 to give summary")
+    print(result)
     stop_listening_event.set()  # Signal to stop the STT process
 
+# Thread to monitor 0 key press
+#def monitor_zero_key():
+    #zero = input("Press 0 for summary\n")
+    # Signal to stop the STT process
+    #if (zero == "0"):
+      #  stop_listening_event.set()
+    
+     
 # Main function to manage both STT and RAG processes sequentially
 def main():
     global stop_listening_event
@@ -75,9 +87,12 @@ def main():
         # Start the STT part
         print("Listening for speech... Press Enter at any time to stop and switch to LLM.")
 
+        result = [""]
         # Start a thread to monitor the Enter key press
-        enter_key_thread = threading.Thread(target=monitor_enter_key)
+        enter_key_thread = threading.Thread(target=monitor_enter_key, args = (result,))
         enter_key_thread.start()
+      #  zero_key_thread = threading.Thread(target=monitor_zero_key)
+     #   zero_key_thread.start()
 
         # Start the STT process in the main thread
         run_stt()
@@ -85,8 +100,11 @@ def main():
         # Wait for the Enter key press to stop STT
         enter_key_thread.join()
 
+        # Wait for the Zero Key for summary
+     #   zero_key_thread.join()
+
         # RAG part
-        run_rag()
+        run_rag(result[0])
 
         # After either STT or LLM part is done, ask the user what to do next
         while True:
