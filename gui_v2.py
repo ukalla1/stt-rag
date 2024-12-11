@@ -2,12 +2,13 @@ import sys
 import threading
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, 
-    QVBoxLayout, QHBoxLayout, QGridLayout, QPlainTextEdit, QFrame
+    QVBoxLayout, QHBoxLayout, QGridLayout, QPlainTextEdit, QFrame, QRadioButton, QButtonGroup
 )
 from PyQt6.QtCore import Qt
 
 from stt_v2 import listen_and_recognize, stop_listening_event
 from rag import RAG_pipeline
+
 
 class ConvoAid(QWidget):
     def __init__(self):
@@ -18,6 +19,7 @@ class ConvoAid(QWidget):
         self.current_chunk_number = 0
         self.transcript = ""
         self.rag_instance = None
+        self.response_type = "single sentence"  # Default response type
 
         self.init_ui()
 
@@ -66,24 +68,47 @@ class ConvoAid(QWidget):
         question_layout = QGridLayout(question_frame)
         main_layout.addWidget(question_frame)
 
-        question_label = QLabel("Your Question:")
+        question_label = QLabel("Response Type:")
         question_label.setStyleSheet("font-size:14px; color:black;")
         question_layout.addWidget(question_label, 0, 0)
 
+        # Radio buttons for response type
+        self.single_response_button = QRadioButton("Single Sentence")
+        self.single_response_button.setChecked(True)  # Default option
+        self.single_response_button.toggled.connect(self.set_response_type)
+        question_layout.addWidget(self.single_response_button, 0, 1)
+
+        self.detailed_response_button = QRadioButton("In Detail")
+        self.detailed_response_button.toggled.connect(self.set_response_type)
+        question_layout.addWidget(self.detailed_response_button, 0, 2)
+
+        # Group the radio buttons
+        self.response_type_group = QButtonGroup()
+        self.response_type_group.addButton(self.single_response_button)
+        self.response_type_group.addButton(self.detailed_response_button)
+
+        # Question input field
         self.question_entry = QLineEdit()
         self.question_entry.setStyleSheet("font-size:14px; background-color:white; color:black;")
-        question_layout.addWidget(self.question_entry, 1, 0)
+        question_layout.addWidget(self.question_entry, 1, 0, 1, 2)
 
         self.submit_question_button = QPushButton("Submit")
         self.submit_question_button.setStyleSheet("font-size:14px; background-color: lightgrey; color:black;")
         self.submit_question_button.clicked.connect(self.submit_question)
-        question_layout.addWidget(self.submit_question_button, 1, 1)
+        question_layout.addWidget(self.submit_question_button, 1, 2)
 
         # Transcript area
         self.transcript_area = QPlainTextEdit()
         self.transcript_area.setReadOnly(True)
         self.transcript_area.setStyleSheet("font-size:12px; background-color:white; color:black;")
         main_layout.addWidget(self.transcript_area, stretch=1)
+
+    def set_response_type(self):
+        """Set the response type based on the selected radio button."""
+        if self.single_response_button.isChecked():
+            self.response_type = "single sentence"
+        elif self.detailed_response_button.isChecked():
+            self.response_type = "in detail"
 
     def start_stt(self):
         """Start the Speech-to-Text process."""
@@ -105,7 +130,6 @@ class ConvoAid(QWidget):
         """STT process."""
         listen_and_recognize(self.current_chunk_number)
         self.current_chunk_number += 1
-        # Directly append text (no QThread checks)
         self.append_transcript_text(f"Transcription saved as transcription_chunk_{self.current_chunk_number - 1}.pdf")
 
     def ask_llm(self):
@@ -114,16 +138,31 @@ class ConvoAid(QWidget):
         self.question_entry.setEnabled(True)
         self.question_entry.clear()
 
-        pdf_filename = f"transcription_chunk_{self.current_chunk_number - 1}.pdf"
-        self.rag_instance = RAG_pipeline()
-        try:
-            docs = self.rag_instance.load_documents([pdf_filename])
-            splits = self.rag_instance.split_documents(docs)
-            self.rag_instance.create_vector_db(splits, persist_directory='docs/chroma/')
-            self.rag_instance.build_qa_chain()
-            self.append_transcript_text(f"Loaded {pdf_filename} into the LLM.")
-        except Exception as e:
-            self.append_transcript_text(f"Error loading transcription into LLM: {e}")
+        pdf_file_path = "./source/"
+        pdf_files = [pdf_file_path+"reviewer_1.pdf", pdf_file_path+"reviewer_2.pdf"]  # Add other PDFs if needed
+        # Handle cases where no STT chunk is available
+        if self.current_chunk_number == 0:
+            self.rag_instance = RAG_pipeline()  # Create a default RAG instance
+            self.append_transcript_text("No transcription available. Initializing LLM with default setup.")
+            try:
+                docs = self.rag_instance.load_documents(pdf_files)
+                splits = self.rag_instance.split_documents(docs)
+                self.rag_instance.create_vector_db(splits, persist_directory='docs/chroma/')
+                self.rag_instance.build_qa_chain()
+            except Exception as e:
+                self.append_transcript_text(f"Error loading transcription into LLM: {e}")
+        
+        else:
+            pdf_filename = f"transcription_chunk_{self.current_chunk_number - 1}.pdf"
+            self.rag_instance = RAG_pipeline()
+            try:
+                docs = self.rag_instance.load_documents([pdf_filename])
+                splits = self.rag_instance.split_documents(docs)
+                self.rag_instance.create_vector_db(splits, persist_directory='docs/chroma/')
+                self.rag_instance.build_qa_chain()
+                self.append_transcript_text(f"Loaded {pdf_filename} into the LLM.")
+            except Exception as e:
+                self.append_transcript_text(f"Error loading transcription into LLM: {e}")
 
     def submit_question(self):
         """Submit a question to the LLM and display the answer."""
@@ -133,14 +172,15 @@ class ConvoAid(QWidget):
             return
 
         try:
-            answer = self.rag_instance.generate_answer(question)
+            # Include response type in the question
+            formatted_question = f"{question}. Respond in a {self.response_type} manner."
+            answer = self.rag_instance.generate_answer(formatted_question)
             self.append_transcript_text(f"Q: {question}\nA: {answer}")
         except Exception as e:
             self.append_transcript_text(f"Error generating answer: {e}")
 
     def append_transcript_text(self, text):
         """Append text to the transcript area."""
-        # Directly append text.
         self.transcript_area.appendPlainText(text)
 
 

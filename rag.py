@@ -111,7 +111,8 @@ def main():
     analyzer = RAG_pipeline()
 
     # Load the documents
-    pdf_files = ["/app/source/reviewer_1.pdf"]  # Add other PDFs if needed
+    pdf_file_path = "./source/"
+    pdf_files = [pdf_file_path+"reviewer_1.pdf", pdf_file_path+"reviewer_2.pdf"]  # Add other PDFs if needed
     docs = analyzer.load_documents(pdf_files)
 
     # Split documents into smaller chunks
