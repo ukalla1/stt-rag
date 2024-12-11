@@ -45,9 +45,9 @@ def listen_and_recognize(current_chunk_number):
                 full_transcription += text + " "
 
             except sr.UnknownValueError:
-                # print("Sorry, I did not get that.")
+                print("Sorry, I did not get that.")
             except sr.RequestError as e:
-                # print(f"Could not request results; {e}")
+                print(f"Could not request results; {e}")
 
         # Wrap the entire transcribed conversation and write to PDF
         wrapped_text = wrapper.fill(full_transcription)
