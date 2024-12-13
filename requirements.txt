@@ -11,3 +11,4 @@ pypdf
 fpdf
 tiktoken
 chromadb
+PyQt6
