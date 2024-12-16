@@ -1,9 +1,9 @@
 Run with Virtual Env:
-1. Create a virtual env with Python 3.8 or greater
-	1.1 If using conda you can run "conda create -n "achilles" python=3.9.6"
-	1.2 Once the env is created it can be activated using "conda activate achilles"
+1. Create a virtual env with Python 3.8 or greater  
+1.1 If using conda you can run "conda create -n "achilles" python=3.9.6"  
+1.2 Once the env is created it can be activated using "conda activate achilles"
 2. run ‘pip install -r requirements.txt’
-3. run ‘achilles_v3.py’
+3. run ‘gui_v3.py’
 4. The code will begin by going into the speech mode
 5. Speak for a desired amount of time and hit the enter key
 6. This will take you to the llm-rag part

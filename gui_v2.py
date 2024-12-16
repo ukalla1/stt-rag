@@ -117,12 +117,14 @@ class ConvoAid(QWidget):
         self.stop_stt_button.setEnabled(True)
 
         # Start STT in a separate thread
+        global stt_thread
         stt_thread = threading.Thread(target=self.run_stt, daemon=True)
         stt_thread.start()
 
     def stop_stt(self):
         """Stop the Speech-to-Text process."""
         stop_listening_event.set()
+        stt_thread.join()
         self.stop_stt_button.setEnabled(False)
         self.ask_llm_button.setEnabled(True)
 
